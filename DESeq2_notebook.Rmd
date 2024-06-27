@@ -1,0 +1,112 @@
+
+```{r}
+if (!requireNamespace("BiocManager", quietly=True))
+  install.packages("BiocManager")
+
+BiocManager::install("DESeq2")
+```
+
+```{r}
+install.packages("dplyr")
+```
+
+```{r}
+BiocManager::install("AnnotationDbi")
+BiocManager::install("org.Hs.eg.db")
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+```
+
+```{r}
+library(DESeq2)
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+BiocManager::install("EnhancedVolcano")
+install.packages("textshaping")
+```
+
+```{r}
+library(EnhancedVolcano)
+```
+
+
+```{r}
+counts <- read.csv("/Users/Shrey/Shrey_Work/Duke/Research/Chatterjee_Lab/Oogonia_Shrey/Revisions/may_2024/DGE/counts_feb_2024.csv")
+```
+
+```{r}
+# REMOVE CHARS AFTER AND INCLUDING "."
+counts <- counts %>% mutate(Geneid = sub("\\..*", "", Geneid))
+```
+
+```{r}
+# CONVERT GENE ID TO SYMBOL
+ensembl_ids <- counts$Geneid
+gene_names <- mapIds(org.Hs.eg.db, keys = ensembl_ids, column = "SYMBOL", keytype = "ENSEMBL", multiVals = "first")
+counts$GeneName <- gene_names
+```
+
+```{r}
+# REMOVE DUPLICATES/INVALID GENES AND MAKE GENE SYMBOLS AS INDICES
+counts <- counts %>% distinct(GeneName, .keep_all = TRUE)
+counts <- counts %>% filter(!is.na(GeneName))
+rownames(counts) <- counts$GeneName
+counts <- subset(counts, select = -Geneid)
+```
+
+```{r}
+# GET D3 AND D120 SAMPLES ONLY
+cols <- grep(pattern = "(D3|d120)", x = colnames(counts), ignore.case = FALSE)
+d3_d120 <- counts[, cols]
+d3_d120 <- d3_d120[, -c((ncol(d3_d120) - 2):ncol(d3_d120))]
+```
+
+
+```{r}
+### CREATE CONDITION AND COLDATA
+condition <- factor(c(rep("D3", 13), rep("d120", 4)))
+coldata <- data.frame(row.names=colnames(d3_d120), condition)
+```
+
+```{r}
+### INITIALIZE DESeq OBJECT
+dds <- DESeqDataSetFromMatrix(countData = d3_d120, colData = coldata, design = ~condition)
+dds <- DESeq(dds)
+```
+```{r}
+vsdata <- vst(dds, blind=FALSE)
+pca <- plotPCA(vsdata, intgroup = 'condition')
+pca <- pca + geom_point(size = 3) + labs(colour = "Groups")
+
+pca
+```
+```{r}
+ggsave("d3_d120_pca.png", plot = pca, width = 15, height = 5)
+```
+
+
+```{r}
+res <- results(dds, contrast=c('condition', 'D3', 'd120'))
+res <- na.omit(res)
+res <- res[res$padj <= 0.05, ]
+res
+```
+
+```{r}
+d3_d120_volcano <- EnhancedVolcano(res, x="log2FoldChange", y="padj", lab=rownames(res),
+                title="D3 vs. d120", subtitle="Differential Expression",
+                pCutoff=1e-4, FCcutoff=1)
+
+d3_d120_volcano
+```
+
+```{r}
+ggsave("d3_d120_volcano.png", plot = d3_d120_volcano, width = 8, height = 12)
+```
+
+
+

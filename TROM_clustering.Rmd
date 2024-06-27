@@ -1,0 +1,311 @@
+
+
+```{r}
+install.packages('devtools')
+options(warn=-1)
+
+library(devtools)
+
+setwd('/Users/Shrey/Shrey_Work/Duke/Research/Chatterjee_Lab/Oogonia_Shrey/Revisions/')
+load_all("./may_2024/TROM_oogonia_rev_may2024/")
+```
+
+```{r}
+if (!requireNamespace("BiocManager", force = TRUE))
+   install.packages("BiocManager")
+BiocManager::install(c("GO.db", "topGO"))
+```
+
+```{r}
+install.packages("git2r")
+library(git2r)
+```
+
+```{r}
+library(gplots)
+```
+
+```{r}
+sp_gene_expr <- read.csv("log2(norm_counts+1)_feb2024_gene_names.csv", header=T, stringsAsFactors=F)
+```
+
+```{r}
+z_thre_from_data <- choose.z(sp_gene_expr, mode=F)
+```
+
+```{r}
+### DATA-DRIVEN Z-SCORE
+### FROM ENTIRE COUNTS MATRIX
+sim_mat_from_data <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=z_thre_from_data)
+write.csv(sim_mat_from_data, "log2(norm_counts+1)_feb2024_trom_mat_z=1.3.csv")
+
+heatmap.2(sim_mat_from_data,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.3,
+          cexCol=0.3,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-0.5)
+### ENTIRE COUNTS MATRIX
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-0.5)
+write.csv(sim_mat_user, "log2(norm_counts+1)_feb2024_trom_mat_z=-0.5.csv")
+```
+```{r}
+heatmap.2(sim_mat_user,
+          margins=c(4, 4),
+          trace='none',
+          cexRow=0.2,
+          cexCol=0.3,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-1.0)
+### ENTIRE COUNTS MATRIX
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-1.0)
+write.csv(sim_mat_user, "log2(norm_counts+1)_feb2024_trom_mat_z=-1.0.csv")
+
+heatmap.2(sim_mat_user,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.3,
+          cexCol=0.3,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-1.0)
+### PBG vs. ATLAS SAMPLES
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-1.0)
+
+sim_mat_user <- as.matrix(sim_mat_user)
+sim_mat_user_trom <- sim_mat_user[, 30:ncol(sim_mat_user)]
+
+row_index <- which(rownames(sim_mat_user_trom) == "PGP1.D5.unsorted")
+sim_mat_user_trom <- sim_mat_user_trom[1:row_index, ]
+
+write.csv(sim_mat_user_trom, "atlas_pbg_samples_trom_mat_z=-1.0.csv")
+
+heatmap.2(sim_mat_user_trom,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.5,
+          cexCol=0.5,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-0.8)
+### PBG vs. ATLAS SAMPLES
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-0.8)
+
+sim_mat_user <- as.matrix(sim_mat_user)
+sim_mat_user_trom <- sim_mat_user[, 30:ncol(sim_mat_user)]
+
+row_index <- which(rownames(sim_mat_user_trom) == "PGP1.D5.unsorted")
+sim_mat_user_trom <- sim_mat_user_trom[1:row_index, ]
+
+write.csv(sim_mat_user_trom, "atlas_pbg_samples_trom_mat_z=-0.8.csv")
+
+heatmap.2(sim_mat_user_trom,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.5,
+          cexCol=0.5,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-0.7)
+### PBG vs. ATLAS SAMPLES
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-0.7)
+
+sim_mat_user <- as.matrix(sim_mat_user)
+sim_mat_user_trom <- sim_mat_user[, 30:ncol(sim_mat_user)]
+
+row_index <- which(rownames(sim_mat_user_trom) == "PGP1.D5.unsorted")
+sim_mat_user_trom <- sim_mat_user_trom[1:row_index, ]
+
+write.csv(sim_mat_user_trom, "atlas_pbg_samples_trom_mat_z=-0.7.csv")
+
+heatmap.2(sim_mat_user_trom,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.5,
+          cexCol=0.5,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+
+
+### TROM FOR ONLY OOGONIA-LIKE GENES ###
+```{r}
+### FILTER FOR OOGONIA-LIKE GENES
+oog_genes <- read.csv("oogonia_genes.csv", header=T, stringsAsFactors=F)
+
+sp_genes <- sp_gene_expr[, "Genes"]
+oog_gene_list <- oog_genes[, "Gene"]
+
+filtered_indices <- which(sp_genes %in% oog_gene_list)
+oog_sp_gene_expr <- as.matrix(sp_gene_expr[filtered_indices, ])
+```
+
+```{r}
+write.csv(oog_sp_gene_expr, "log2(norm_counts+1)_feb2024_oog_genes_only.csv")
+mat <- read.csv("log2(norm_counts+1)_feb2024_oog_genes_only.csv", header=T, stringsAsFactors=FALSE)
+mat <- mat[, !(names(mat) %in% "X")]
+```
+
+
+```{r}
+z_thre_from_data <- choose.z(mat, mode=F)
+```
+
+```{r}
+### DATA-DRIVEN Z-SCORE
+### FROM ALL COUNTS
+sim_mat_from_data <- ws.trom(mat, save_overlap_genes=F, z_thre=z_thre_from_data)
+write.csv(sim_mat_from_data, "log2(norm_counts+1)_feb2024_oog_genes_trom_mat_z=3.csv")
+
+heatmap.2(sim_mat_from_data,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.3,
+          cexCol=0.3,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=0.5)
+### ENTIRE COUNTS MATRIX
+sim_mat_user <- ws.trom(mat, save_overlap_genes=F, z_thre=0.5)
+write.csv(sim_mat_user, "log2(norm_counts+1)_feb2024_oog_genes_trom_mat_z=0.5.csv")
+
+```
+```{r}
+heatmap.2(sim_mat_user,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.3,
+          cexCol=0.3,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+```{r}
+### USER-DEFINED Z-SCORE (Z=-1.0)
+### PBG vs. ATLAS SAMPLES
+sim_mat_user <- ws.trom(mat, save_overlap_genes=F, z_thre=-1.0)
+sim_mat_user <- as.matrix(sim_mat_user)
+```
+```{r}
+sim_mat_user_trom <- sim_mat_user[, 30:ncol(sim_mat_user)]
+
+row_index <- which(rownames(sim_mat_user_trom) == "PGP1.D5.unsorted")
+sim_mat_user_trom <- sim_mat_user_trom[1:row_index, ]
+```
+```{r}
+write.csv(sim_mat_user_trom, "atlas_pbg_samples_oog_genes_trom_mat_z=-1.0.csv")
+```
+```{r}
+heatmap.2(sim_mat_user_trom,
+          margins=c(6.5, 6.5),
+          trace='none',
+          cexRow=0.5,
+          cexCol=0.5,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+
+
+```{r}
+### TROM FOR D5s vs ATLAS SAMPLES
+### USER-DEFINED Z-SCORE (Z=-1.0)
+sim_mat_user <- ws.trom(sp_gene_expr, save_overlap_genes=F, z_thre=-1.0)
+```
+```{r}
+sim_mat_user <- as.matrix(sim_mat_user)
+
+sim_mat_user_trom <- sim_mat_user[, 30:ncol(sim_mat_user)]
+
+row_index <- which(rownames(sim_mat_user_trom) == "PGP1.D5.unsorted")
+sim_mat_user_trom <- sim_mat_user_trom[1:row_index, ]
+
+rows <- c("F2.D5.reset.iOLC", "F3.D5.reset.iOLC")
+
+desired_rows <- sim_mat_user_trom[rows, , drop=FALSE]
+```
+```{r}
+#write.csv(sim_mat_user_trom, "atlas_pbg_samples_trom_mat_z=-0.7.csv")
+
+heatmap.2(desired_rows,
+          margins=c(7,7.5),
+          trace='none',
+          cexRow=1,
+          cexCol=0.5,
+          srtCol=45,
+          key=TRUE,
+          key.title='',
+          key.xlab='',
+          key.ylab='',
+          key.par = list(yaxt='n'))
+```
+
+
+
